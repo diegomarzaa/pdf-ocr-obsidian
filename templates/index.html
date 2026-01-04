@@ -3,9 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Convert PDF documents to Markdown format using Mistral AI OCR. Free, fast, and accurate.">
+  <meta name="theme-color" content="#3b82f6">
   <title>PDF to Markdown OCR</title>
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <!-- Updated FontAwesome CDN -->
+  <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
   
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -21,7 +28,13 @@
   <a href="#ocr-form" class="skip-link">Skip to main content</a>
   <div class="container">
     <header>
-      <h1>PDF to Markdown OCR</h1>
+      <div class="header-top">
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+          <span>Dark</span>
+        </button>
+      </div>
+      <h1><i class="fas fa-file-pdf" style="margin-right: 10px;"></i>PDF to Markdown</h1>
       <p class="tagline">Convert your PDFs effortlessly using Mistral AI OCR</p>
     </header>
     
@@ -29,72 +42,96 @@
       <section class="form-section">
         <form id="ocr-form" aria-label="PDF to Markdown conversion form">
           <div class="form-group" id="api-key-group">
-            <label for="api-key">Mistral API Key</label>
+            <label for="api-key"><i class="fas fa-key" style="margin-right: 6px;"></i>Mistral API Key</label>
             <div class="password-toggle-group">
               <input type="password" id="api-key" name="api_key" placeholder="Enter your API key">
-              <input type="checkbox" id="api-key-toggle">
-              <label for="api-key-toggle" class="toggle-label">Show</label>
+              <label class="toggle-label">
+                <input type="checkbox" id="api-key-toggle">
+                <span>Show</span>
+              </label>
             </div>
-            <small>Get one at: <a href="https://console.mistral.ai/api-keys" target="_blank">Mistral API</a></small>
-            <small>Your key is securely transmitted and not stored long-term.</small>
+            <small>Get one at: <a href="https://console.mistral.ai/api-keys" target="_blank" rel="noopener">Mistral Console</a> · Your key is securely transmitted</small>
           </div>
           
           <div class="form-group" id="api-key-configured" style="display: none;">
             <div class="api-key-status">
-              <i class="fas fa-check-circle" style="color: green;"></i>
-              <span>API Key has been loaded from environment variables</span>
+              <i class="fas fa-check-circle"></i>
+              <span>API Key loaded from environment</span>
             </div>
           </div>
           
           <div class="form-group">
-            <label for="pdf-files">Select PDF Files</label>
-            <input type="file" id="pdf-files" name="pdf_files" accept=".pdf" multiple required>
-            <small>Select one or more PDFs.</small>
-            <small>Note: API rate limits may apply.</small>
+            <label><i class="fas fa-file-upload" style="margin-right: 6px;"></i>Select PDF Files</label>
+            <div class="file-upload-area" id="file-upload-area">
+              <i class="fas fa-cloud-upload-alt upload-icon"></i>
+              <p>Drag & drop your PDFs here</p>
+              <p>or <span class="browse-link">browse files</span></p>
+              <input type="file" id="pdf-files" name="pdf_files" accept=".pdf" multiple required>
+            </div>
+            <div class="selected-files" id="selected-files" style="display: none;"></div>
+            <small>Select one or more PDFs · API rate limits may apply</small>
           </div>
+          
           <div class="form-group">
-            <label>
-              <input type="checkbox" id="include-separator" {% if default_page_separator %}checked{% endif %}>
-              Insert page separators
-            </label>
-            <input type="text" id="separator-text" value="{{ default_page_separator }}" placeholder="---" style="width: 80px; margin-left: 10px;">
-            <small>Leave blank to merge pages without separators.</small>
+            <label><i class="fas fa-minus" style="margin-right: 6px;"></i>Page Separators</label>
+            <div class="separator-options">
+              <label style="font-weight: normal; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="include-separator" {% if default_page_separator %}checked{% endif %}>
+                <span>Insert page separators</span>
+              </label>
+              <input type="text" id="separator-text" value="{{ default_page_separator }}" placeholder="---">
+            </div>
+            <small>Leave blank to merge pages without separators</small>
           </div>
-          <button type="submit" id="submit-btn">Convert PDFs</button>
+          
+          <button type="submit" id="submit-btn">
+            <i class="fas fa-magic" id="submit-icon"></i>
+            <span id="submit-text">Convert PDFs</span>
+          </button>
+          
+          <div class="progress-container" id="progress-container" style="display: none;">
+            <div class="progress-bar" id="progress-bar"></div>
+            <span class="progress-text" id="progress-text">Uploading...</span>
+          </div>
+          
+          <p class="keyboard-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to convert</p>
         </form>
       </section>
       
       <section id="status-area" class="status-section" aria-live="polite">
-        <h2>Processing Status</h2>
+        <h2><i class="fas fa-terminal" style="margin-right: 8px;"></i>Processing Status</h2>
         <pre id="status-log" role="log" aria-label="Status messages">Ready. Select files and click "Convert PDFs".</pre>
         <div class="loader" id="loader" style="display: none;" role="status" aria-label="Processing in progress"></div>
       </section>
       
       <section id="results-area" class="results-section" style="display: none;" aria-live="polite">
-        <h2>Downloads</h2>
-        <p>Download the ZIP archive(s) containing your Markdown files and images.</p>
+        <h2><i class="fas fa-download" style="margin-right: 8px;"></i>Downloads</h2>
+        <p style="margin-bottom: 12px; color: var(--text-secondary); font-size: 0.9rem;">Your Markdown files and images are ready</p>
         <ul id="download-links" aria-label="Download links"></ul>
       </section>
       
       <section id="preview-area" class="preview-section" style="display: none;">
-        <h2>Previews</h2>
+        <h2><i class="fas fa-eye" style="margin-right: 8px;"></i>Previews</h2>
         <div id="preview-content"></div>
       </section>
       
       <section id="error-area" class="error-section" style="display: none;" role="alert" aria-live="assertive">
-        <h2>Error</h2>
+        <h2><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>Error</h2>
         <pre id="error-message" class="error"></pre>
       </section>
     </main>
     
     <footer>
-      <p>Developed by Diego Marzá</p>
+      <p>Developed by <strong>Diego Marzá</strong></p>
       <div class="social-icons">
-        <a href="https://www.linkedin.com/in/diegomarza/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-        <a href="https://github.com/diegomarzaa/pdf-ocr-obsidian/" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/diegomarza/" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="https://github.com/diegomarzaa/pdf-ocr-obsidian/" target="_blank" rel="noopener" title="GitHub"><i class="fab fa-github"></i></a>
       </div>
     </footer>
   </div>
+  
+  <!-- Toast notification container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
   
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
