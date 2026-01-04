@@ -4,6 +4,24 @@
     margin: 0;
     padding: 0;
   }
+
+  /* Skip Link for Accessibility */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #0056b3;
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 1000;
+    text-decoration: none;
+    border-radius: 0 0 4px 0;
+    transition: top 0.2s ease;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
   
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -71,6 +89,19 @@
     border-radius: 4px;
     font-size: 1em;
   }
+
+  input[type="password"]:focus,
+  input[type="text"]:focus,
+  input[type="file"]:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+    border-color: #007bff;
+  }
+
+  input[type="checkbox"]:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
   
   input[type="file"] {
     padding: 5px;
@@ -102,6 +133,11 @@
   button:hover {
     background-color: #0056b3;
   }
+
+  button:focus {
+    outline: 2px solid #0056b3;
+    outline-offset: 2px;
+  }
   
   button:disabled {
     background-color: #ccd0d5;
@@ -122,6 +158,11 @@
   
   a:hover {
     text-decoration: underline;
+  }
+
+  a:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
   }
   
   /* Status, Results, Preview, and Error Areas */
@@ -222,7 +263,59 @@
     font-size: 0.9em;
   }
   
-  /* Footer */
+  /* Preview Toggle Styles */
+  .preview-toggle {
+    cursor: pointer;
+    background: #e9ecef;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #0056b3;
+    transition: background-color 0.2s ease;
+    user-select: none;
+  }
+
+  .preview-toggle:hover {
+    background-color: #dee2e6;
+  }
+
+  .preview-toggle:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
+
+  .preview-content-inner {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+
+  .preview-item.collapsed .preview-content-inner {
+    display: none;
+  }
+
+  .preview-item.collapsed .preview-toggle::after {
+    content: ' ▼';
+  }
+
+  .preview-item:not(.collapsed) .preview-toggle::after {
+    content: ' ▲';
+  }
+
+  /* Image Preview Gallery Styles */
+  .image-preview {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+
+  .image-preview h4 {
+    margin-bottom: 10px;
+    color: #555;
+  }
+
+/* Footer */
   footer {
     text-align: center;
     padding: 20px 10px;

@@ -15,10 +15,10 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
+  <a href="#ocr-form" class="skip-link">Skip to main content</a>
   <div class="container">
     <header>
       <h1>PDF to Markdown OCR</h1>
@@ -27,7 +27,7 @@
     
     <main>
       <section class="form-section">
-        <form id="ocr-form">
+        <form id="ocr-form" aria-label="PDF to Markdown conversion form">
           <div class="form-group" id="api-key-group">
             <label for="api-key">Mistral API Key</label>
             <div class="password-toggle-group">
@@ -64,16 +64,16 @@
         </form>
       </section>
       
-      <section id="status-area" class="status-section">
+      <section id="status-area" class="status-section" aria-live="polite">
         <h2>Processing Status</h2>
-        <pre id="status-log">Ready. Select files and click "Convert PDFs".</pre>
-        <div class="loader" id="loader" style="display: none;"></div>
+        <pre id="status-log" role="log" aria-label="Status messages">Ready. Select files and click "Convert PDFs".</pre>
+        <div class="loader" id="loader" style="display: none;" role="status" aria-label="Processing in progress"></div>
       </section>
       
-      <section id="results-area" class="results-section" style="display: none;">
+      <section id="results-area" class="results-section" style="display: none;" aria-live="polite">
         <h2>Downloads</h2>
         <p>Download the ZIP archive(s) containing your Markdown files and images.</p>
-        <ul id="download-links"></ul>
+        <ul id="download-links" aria-label="Download links"></ul>
       </section>
       
       <section id="preview-area" class="preview-section" style="display: none;">
@@ -81,7 +81,7 @@
         <div id="preview-content"></div>
       </section>
       
-      <section id="error-area" class="error-section" style="display: none;">
+      <section id="error-area" class="error-section" style="display: none;" role="alert" aria-live="assertive">
         <h2>Error</h2>
         <pre id="error-message" class="error"></pre>
       </section>

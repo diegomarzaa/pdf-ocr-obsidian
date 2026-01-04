@@ -167,10 +167,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Add EVENT LISTENER to toggle button ---
         toggleButton.addEventListener('click', () => {
             previewContainer.classList.toggle('collapsed'); // Toggle collapsed class
+            toggleButton.setAttribute('aria-expanded', 
+                previewContainer.classList.contains('collapsed') ? 'false' : 'true');
         });
 
+        // Make toggle button keyboard accessible
+        toggleButton.setAttribute('tabindex', '0');
+        toggleButton.setAttribute('role', 'button');
+        toggleButton.setAttribute('aria-expanded', 'false');
+        toggleButton.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                previewContainer.classList.toggle('collapsed');
+                toggleButton.setAttribute('aria-expanded', 
+                    previewContainer.classList.contains('collapsed') ? 'false' : 'true');
+            }
+        });
 
         previewContent.appendChild(previewContainer);
+
+        // Trigger MathJax to render any math formulas in the preview
+        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+            MathJax.typesetPromise([previewContainer]).catch((err) => {
+                console.warn('MathJax typesetting error:', err);
+            });
+        }
     }
 
     form.addEventListener('submit', async (event) => {
